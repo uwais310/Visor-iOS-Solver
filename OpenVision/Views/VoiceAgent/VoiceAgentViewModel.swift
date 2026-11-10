@@ -59,11 +59,12 @@ enum SolverIntent {
     static func isStopCommand(_ command: String) -> Bool {
         let lowerCommand = command.lowercased()
         let commandWords = Set(lowerCommand.split(whereSeparator: { !$0.isLetter }).map(String.init))
-        let stopSingleWords: Set<String> = ["stop", "quiet", "silence", "enough"]
-        let stopExact: Set<String> = ["stop", "quiet", "silence", "enough", "dừng", "thôi", "ngừng"]
+        let stopSingleWords: Set<String> = ["stop", "quiet", "silence", "enough", "стоп", "замолчи"]
+        let stopExact: Set<String> = ["stop", "quiet", "silence", "enough", "dừng", "thôi", "ngừng", "стоп", "хватит", "тихо", "замолчи", "остановись"]
         let stopPhrases = [
             "be quiet", "shut up", "ok stop", "okay stop", "stop talking", "stop it",
-            "dừng lại", "dừng đi", "thôi đi", "ngừng lại", "ngừng đi"
+            "dừng lại", "dừng đi", "thôi đi", "ngừng lại", "ngừng đi",
+            "хватит говорить", "перестань", "остановись"
         ]
         let isExactStop = stopExact.contains(lowerCommand.trimmingCharacters(in: .whitespacesAndNewlines))
         return (isExactStop
@@ -76,7 +77,7 @@ enum SolverIntent {
     @MainActor
     static func missingKeyMessage(for prompt: String) -> String {
         TTSService.containsVietnamese(prompt)
-            ? "Chưa có API key Gemini. Bạn mở Cài đặt, chọn Gemini và dán key vào nhé."
+            ? "Нет ключа Gemini. Открой Настройки, раздел Gemini, и вставь ключ."
             : "There is no Gemini API key yet. Open Settings, Gemini, and paste your key."
     }
 
@@ -84,7 +85,7 @@ enum SolverIntent {
     @MainActor
     static func networkFailureMessage(for prompt: String) -> String {
         TTSService.containsVietnamese(prompt)
-            ? "Mạng đang chậm nên mình chưa nhận được câu trả lời. Bạn hỏi lại giúp mình nhé."
+            ? "Сеть медленная, ответ не пришёл. Спроси ещё раз."
             : "The connection is slow and I didn't get an answer. Please ask again."
     }
 
@@ -93,36 +94,36 @@ enum SolverIntent {
     @MainActor
     static var speaksVietnamese: Bool {
         switch SettingsManager.shared.settings.recognitionLanguage {
-        case "vi-VN": return true
+        case "ru-RU", "vi-VN": return true
         case "en-US": return false
-        default: return Locale.preferredLanguages.first?.lowercased().hasPrefix("vi") ?? false
+        default: return Locale.preferredLanguages.first?.lowercased().hasPrefix("ru") ?? false
         }
     }
 
     /// The question sent for "capture and solve" (hold on the glasses' capture button).
     @MainActor
     static var solvePhotoQuestion: String {
-        speaksVietnamese ? "Giải bài trong ảnh này." : "Solve the problem in this photo."
+        speaksVietnamese ? "Посмотри на фото. Если там задача или вопрос — реши и дай ответ. Если нет — скажи, что это." : "Solve the problem in this photo."
     }
 
     /// Spoken after a capture-button photo, so the wearer knows it is ready for a question.
     @MainActor
     static var photoReadyMessage: String {
-        speaksVietnamese ? "Đã chụp. Bạn hỏi đi." : "Got the photo. Go ahead."
+        speaksVietnamese ? "Снято. Спрашивай." : "Got the photo. Go ahead."
     }
 
     /// Spoken when the glasses' photo could not be taken or transferred.
     @MainActor
     static var photoFailedMessage: String {
         speaksVietnamese
-            ? "Chưa lấy được ảnh từ kính. Bạn bấm nút chụp lại giúp mình nhé."
+            ? "Не получилось взять фото с очков. Нажми кнопку съёмки ещё раз."
             : "I couldn't get the photo from the glasses. Please press the capture button again."
     }
 
     /// Spoken for "repeat the answer" when nothing has been answered yet.
     @MainActor
     static var nothingToRepeatMessage: String {
-        speaksVietnamese ? "Chưa có câu trả lời nào để đọc lại." : "There's no answer to repeat yet."
+        speaksVietnamese ? "Пока нечего повторять." : "There's no answer to repeat yet."
     }
 
     /// What the glasses say when a visual question arrives and no photo can be found
@@ -130,7 +131,7 @@ enum SolverIntent {
     @MainActor
     static func missingPhotoMessage(for prompt: String) -> String {
         TTSService.containsVietnamese(prompt)
-            ? "Không tìm thấy ảnh chụp bài tập từ kính Ray-Ban. Bạn hãy bấm nút chụp trên gọng kính rồi hỏi lại nhé."
+            ? "Нет фото с очков. Нажми кнопку съёмки на дужке и спроси ещё раз."
             : "No photo found from Ray-Ban glasses. Please press the temple capture button and ask again."
     }
 
@@ -140,7 +141,8 @@ enum SolverIntent {
         let lower = text.lowercased()
 
         // Status queries ("có ảnh chưa", "có ảnh không") are conversational checks, not visual solving commands
-        let statusPhrases = ["có ảnh chưa", "có ảnh không", "nhận được ảnh chưa", "thấy ảnh chưa", "đã có ảnh"]
+        let statusPhrases = ["có ảnh chưa", "có ảnh không", "nhận được ảnh chưa", "thấy ảnh chưa", "đã có ảnh",
+                             "фото есть", "есть фото", "фото получил", "получил фото"]
         if statusPhrases.contains(where: { lower.contains($0) }) {
             return false
         }
@@ -152,6 +154,11 @@ enum SolverIntent {
             "giải giúp", "giải hộ", "giải bài", "giải câu", "tính câu này", "làm câu này", "chọn đáp án",
             "trong ảnh", "trong hình", "ảnh này", "hình này", "bức ảnh", "bức hình",
             "xem giúp", "nhìn giúp", "đọc giúp", "trước mặt", "chụp",
+            // Russian
+            "что это", "кто это", "что здесь", "что тут", "что написано", "что я вижу", "что видишь",
+            "передо мной", "реши", "решить", "задач", "задани", "уравнен", "этот вопрос", "этот пример",
+            "посмотри", "глянь", "прочитай", "прочти", "сфоткай", "сфотографируй",
+            "на фото", "на картинке", "на экране", "на доске", "на листе", "на странице",
             "day la cai gi", "day la gi", "cai nay la gi", "cai gi day", "giai bai", "giai cau",
             "dap an", "de bai", "cau nay", "bai nay", "anh nay", "trong anh", "chup",
             "photo", "image", "picture", "solve this", "solve problem", "what is this", "what is that",
@@ -654,11 +661,11 @@ final class VoiceAgentViewModel: ObservableObject {
 
         var displayText: String {
             switch self {
-            case .idle: return "Chạm để bắt đầu"
-            case .connecting: return "Đang kết nối…"
-            case .listening: return "Đang nghe…"
-            case .thinking: return "Đang suy nghĩ…"
-            case .speaking: return "Đang trả lời…"
+            case .idle: return "Нажми, чтобы начать"
+            case .connecting: return "Подключение…"
+            case .listening: return "Слушаю…"
+            case .thinking: return "Думаю…"
+            case .speaking: return "Отвечаю…"
             }
         }
     }
@@ -675,9 +682,9 @@ final class VoiceAgentViewModel: ObservableObject {
         Task { @MainActor in
             let granted = await RecentPhotoScanner.shared.requestAuthorizationIfNeeded()
             if !granted {
-                errorMessage = "OpenVision cần quyền Ảnh (Toàn bộ ảnh) để đọc ảnh chụp từ kính Ray-Ban. Vào Cài đặt → OpenVision → Ảnh."
+                errorMessage = "OpenVision нужен доступ к Фото (Все фото), чтобы читать снимки с очков. Настройки → OpenVision → Фото."
             } else if RecentPhotoScanner.shared.isLimitedAccess {
-                errorMessage = "Quyền Ảnh đang ở chế độ Giới hạn nên app không thấy ảnh mới từ kính. Vào Cài đặt → OpenVision → Ảnh → chọn Toàn bộ ảnh."
+                errorMessage = "Доступ к Фото ограничен, поэтому новые снимки с очков не видны. Настройки → OpenVision → Фото → Все фото."
             }
         }
         // Resume wake-word listening when returning to this screen. onDisappear stops it
@@ -793,7 +800,7 @@ final class VoiceAgentViewModel: ObservableObject {
                     // Put in listening mode (not waiting for wake word)
                     voiceCommandService.enterConversationMode()
                 } else {
-                    errorMessage = "Chưa được cấp quyền nhận dạng giọng nói."
+                    errorMessage = "Нет разрешения на распознавание речи."
                 }
             } catch {
                 // No key yet: still listen, so the glasses can SAY what is missing.
@@ -803,10 +810,10 @@ final class VoiceAgentViewModel: ObservableObject {
                         if !voiceCommandService.isListening { try? voiceCommandService.startListening() }
                         voiceCommandService.enterConversationMode()
                     }
-                    errorMessage = "Chưa có API key Gemini — vào Cài đặt → Gemini để dán key."
+                    errorMessage = "Нет ключа Gemini — вставь его в Настройки → Gemini."
                     return
                 }
-                errorMessage = "Không kết nối được: \(error.localizedDescription)"
+                errorMessage = "Не удалось подключиться: \(error.localizedDescription)"
                 isSessionActive = false
                 agentState = .idle
             }
@@ -920,7 +927,7 @@ final class VoiceAgentViewModel: ObservableObject {
             startWakeWordListening()
         } else {
             print("[VoiceAgent] Speech recognition not authorized")
-            errorMessage = "Chưa được cấp quyền nhận dạng giọng nói. Hãy bật trong Cài đặt."
+            errorMessage = "Нет разрешения на распознавание речи. Включи его в Настройках."
         }
     }
 
@@ -1210,7 +1217,7 @@ final class VoiceAgentViewModel: ObservableObject {
         if isVisual && !hasExistingFreshPhoto {
             print("[VoiceAgent] Visual command detected ('\(command)'). Triggering glasses photo capture...")
             agentState = .thinking
-            statusMessage = "Đang chụp và lấy ảnh từ kính Ray-Ban..."
+            statusMessage = "Снимаю и получаю фото с очков…"
 
             // Actively trigger glasses camera ("tự bấm nút chụp") or wait for recent sync!
             if let photoData = await acquireGlassesPhoto() {
@@ -1261,7 +1268,7 @@ final class VoiceAgentViewModel: ObservableObject {
     private func handleSendFailure(_ error: Error, command: String) {
         if error is CancellationError { return }
         print("[VoiceAgent] Send failed: \(error)")
-        errorMessage = "Gửi câu hỏi thất bại: \(error.localizedDescription)"
+        errorMessage = "Не удалось отправить вопрос: \(error.localizedDescription)"
         if isSessionActive, !ttsService.isSpeaking {
             if case AIBackendError.notConfigured = error {
                 speakResponse(SolverIntent.missingKeyMessage(for: command))
@@ -1288,7 +1295,7 @@ final class VoiceAgentViewModel: ObservableObject {
 
     private func startRecording() async {
         guard glassesManager.isRegistered else {
-            errorMessage = "Hãy kết nối kính trước khi ghi hình."
+            errorMessage = "Сначала подключи очки."
             return
         }
         // Recording needs a live frame stream.
@@ -1296,7 +1303,7 @@ final class VoiceAgentViewModel: ObservableObject {
             await glassesManager.startStreaming()
         }
         guard glassesManager.isStreaming else {
-            errorMessage = "Không bật được camera kính để ghi hình."
+            errorMessage = "Не удалось включить камеру очков."
             return
         }
 
@@ -1308,7 +1315,7 @@ final class VoiceAgentViewModel: ObservableObject {
             guard let self else { return }
             self.isRecording = false
             self.glassesManager.onVideoSampleBuffer = nil
-            self.showRecordingStatus(url != nil ? "Đã lưu vào Ảnh" : "Không lưu được bản ghi")
+            self.showRecordingStatus(url != nil ? "Сохранено в Фото" : "Не удалось сохранить запись")
             if self.glassesManager.isStreaming {
                 Task { await self.glassesManager.stopStreaming() }
             }
@@ -1322,7 +1329,7 @@ final class VoiceAgentViewModel: ObservableObject {
             isRecording = true
         } catch {
             glassesManager.onVideoSampleBuffer = nil
-            errorMessage = "Không bắt đầu ghi được: \(error.localizedDescription)"
+            errorMessage = "Не удалось начать запись: \(error.localizedDescription)"
         }
     }
 
@@ -1454,7 +1461,7 @@ final class VoiceAgentViewModel: ObservableObject {
     func snapPhotoFromGlasses() async {
         HapticFeedback.light()
         print("[VoiceAgent] Manual photo snap requested from glasses...")
-        statusMessage = "Đang chụp và tải ảnh độ phân giải cao..."
+        statusMessage = "Снимаю и загружаю фото в высоком качестве…"
         let data = await acquireGlassesPhoto()
         statusMessage = nil
 
@@ -1465,7 +1472,7 @@ final class VoiceAgentViewModel: ObservableObject {
             print("[VoiceAgent] [OK] Manual photo context cached (\(data.count) bytes)")
         } else {
             HapticFeedback.error()
-            let message = SolverIntent.missingPhotoMessage(for: lastProcessedCommand.isEmpty ? "chụp ảnh" : lastProcessedCommand)
+            let message = SolverIntent.missingPhotoMessage(for: lastProcessedCommand.isEmpty ? "фото" : lastProcessedCommand)
             errorMessage = message
             speakResponse(message)
         }

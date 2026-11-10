@@ -61,7 +61,7 @@ final class GlassesManager: ObservableObject {
     @Published private(set) var isButtonLinkActive: Bool = false
 
     /// Human-readable state of the capture-button link, for Settings.
-    @Published private(set) var buttonLinkStatus: String = "Tắt"
+    @Published private(set) var buttonLinkStatus: String = "Выкл."
 
     /// True while a full-resolution photo is being taken / transferred from the glasses.
     @Published private(set) var isTakingPhoto: Bool = false
@@ -165,7 +165,7 @@ final class GlassesManager: ObservableObject {
             errorMessage = nil
             print("[GlassesManager] Unregistration successful")
         } catch {
-            errorMessage = "Huỷ đăng ký thất bại: \(error.localizedDescription)"
+            errorMessage = "Не удалось отменить регистрацию: \(error.localizedDescription)"
             print("[GlassesManager] Unregistration error: \(error)")
         }
     }
@@ -195,11 +195,11 @@ final class GlassesManager: ObservableObject {
             if reportErrors { errorMessage = message }
         }
         guard isRegistered else {
-            report("Chưa đăng ký với Meta AI")
+            report("Нет регистрации в Meta AI")
             return nil
         }
         guard let deviceId = connectedDevice else {
-            report("Chưa kết nối kính")
+            report("Очки не подключены")
             return nil
         }
 
@@ -208,9 +208,9 @@ final class GlassesManager: ObservableObject {
         if let device = wearables.deviceForIdentifier(deviceId) {
             print("[GlassesManager] Device \(device.nameOrId()): type=\(device.deviceType()) link=\(device.linkState) compatibility=\(device.compatibility())")
             if device.compatibility() == .deviceUpdateRequired {
-                report("Kính cần cập nhật firmware — cập nhật trong app Meta AI")
+                report("Очкам нужно обновление — обнови в приложении Meta AI")
             } else if device.compatibility() == .sdkUpdateRequired {
-                report("Kính mới hơn phiên bản SDK của app")
+                report("Очки новее, чем SDK приложения")
             }
         }
 
@@ -245,7 +245,7 @@ final class GlassesManager: ObservableObject {
                 for await error in errorStream {
                     print("[GlassesManager] Device session error: \(error) — \(error.description)")
                     if reportErrors, UIApplication.shared.applicationState == .active {
-                        self?.errorMessage = "Lỗi phiên kính: \(error.description)"
+                        self?.errorMessage = "Ошибка сессии очков: \(error.description)"
                     }
                 }
             }
@@ -258,7 +258,7 @@ final class GlassesManager: ObservableObject {
                 try? await Task.sleep(nanoseconds: 100_000_000)
             }
             guard sessionStarted, generation == sessionGeneration else {
-                report("Không mở được phiên kết nối kính (hết thời gian)")
+                report("Не удалось открыть сессию с очками (таймаут)")
                 dumpSDKLogs(since: 30)
                 if generation == sessionGeneration { endSession() }
                 return nil
@@ -266,7 +266,7 @@ final class GlassesManager: ObservableObject {
             print("[GlassesManager] Device session started")
             return session
         } catch {
-            report("Không mở được phiên kết nối kính: \(error.localizedDescription)")
+            report("Не удалось открыть сессию с очками: \(error.localizedDescription)")
             endSession()
             return nil
         }
@@ -310,12 +310,12 @@ final class GlassesManager: ObservableObject {
                 status = try await wearables.requestPermission(.camera)
             }
             guard status == .granted else {
-                errorMessage = "Chưa cấp quyền camera kính"
+                errorMessage = "Нет разрешения на камеру очков"
                 return false
             }
             return true
         } catch {
-            errorMessage = "Lỗi quyền camera kính: \(error.localizedDescription)"
+            errorMessage = "Ошибка разрешения камеры очков: \(error.localizedDescription)"
             print("[GlassesManager] Permission error: \(error)")
             return false
         }
@@ -329,7 +329,7 @@ final class GlassesManager: ObservableObject {
             let config = StreamConfiguration(videoCodec: .raw, resolution: .high, frameRate: 30)
             // Order matters: the session must be STARTED before addCamera, else nil.
             guard let cam = try session.addCamera(config: config) else {
-                errorMessage = "Không gắn được camera vào phiên kính"
+                errorMessage = "Не удалось подключить камеру к сессии очков"
                 print("[GlassesManager] addCamera returned nil")
                 return nil
             }
@@ -337,7 +337,7 @@ final class GlassesManager: ObservableObject {
             observePhoto(cam)
             return cam
         } catch {
-            errorMessage = "Không gắn được camera: \(error.localizedDescription)"
+            errorMessage = "Не удалось подключить камеру: \(error.localizedDescription)"
             print("[GlassesManager] addCamera error: \(error)")
             return nil
         }
@@ -357,7 +357,7 @@ final class GlassesManager: ObservableObject {
             return
         }
         guard isRegistered else {
-            errorMessage = "Chưa đăng ký với Meta AI"
+            errorMessage = "Нет регистрации в Meta AI"
             return
         }
         guard await ensureCameraPermission() else { return }
@@ -378,7 +378,7 @@ final class GlassesManager: ObservableObject {
             print("[GlassesManager] Camera stream did not start (attempt \(attempt)) — rebuilding the session")
             endSession()
         }
-        errorMessage = "Camera kính không khởi động được"
+        errorMessage = "Камера очков не запустилась"
         return nil
     }
 
@@ -416,13 +416,13 @@ final class GlassesManager: ObservableObject {
     /// Capture a 720p still from the running video stream (fallback path).
     func capturePhoto() async {
         guard isStreaming, let stream = camera?.stream else {
-            errorMessage = "Camera kính phải đang bật để chụp"
+            errorMessage = "Чтобы снять, камера очков должна быть включена"
             return
         }
         print("[GlassesManager] Capturing photo from stream")
         // Failures surface as StreamError.photoCaptureFailed on the error publisher.
         if !stream.capturePhoto(format: .jpeg) {
-            errorMessage = "Không chụp được ảnh"
+            errorMessage = "Не удалось сделать фото"
             print("[GlassesManager] capturePhoto returned false")
         }
     }
@@ -614,7 +614,7 @@ final class GlassesManager: ObservableObject {
 
         guard enabled else {
             teardownInputs(removeFromSession: true)
-            buttonLinkStatus = "Tắt"
+            buttonLinkStatus = "Выкл."
             if !isStreaming && !isTakingPhoto { endSession() }
             return
         }
@@ -624,12 +624,12 @@ final class GlassesManager: ObservableObject {
 
     private func startButtonLink() async {
         guard wantsButtonLink, inputs == nil, !inputsPermissionDenied else { return }
-        guard isRegistered else { buttonLinkStatus = "Chưa đăng ký kính"; return }
-        guard connectedDevice != nil else { buttonLinkStatus = "Chờ kính kết nối…"; return }
+        guard isRegistered else { buttonLinkStatus = "Очки не зарегистрированы"; return }
+        guard connectedDevice != nil else { buttonLinkStatus = "Жду подключения очков…"; return }
 
-        buttonLinkStatus = "Đang kết nối…"
+        buttonLinkStatus = "Подключение…"
         guard let session = await ensureSession(reportErrors: false) else {
-            buttonLinkStatus = "Không mở được phiên kính"
+            buttonLinkStatus = "Не удалось открыть сессию очков"
             scheduleLinkRetry()
             return
         }
@@ -652,19 +652,19 @@ final class GlassesManager: ObservableObject {
             attached = try session.addInputs(configuration: configuration)
         } catch {
             print("[GlassesManager] addInputs failed: \(error)")
-            buttonLinkStatus = "Không gắn được nút chụp — thử lại…"
+            buttonLinkStatus = "Кнопка съёмки не подключилась — пробую ещё…"
             scheduleLinkRetry()
             return
         }
         guard let attached else {
             print("[GlassesManager] addInputs returned nil")
-            buttonLinkStatus = "Kính này không gửi nút chụp cho app"
+            buttonLinkStatus = "Эти очки не передают кнопку съёмки приложению"
             return
         }
 
         inputs = attached
         inputsHasActivated = false
-        buttonLinkStatus = "Đang kích hoạt…"
+        buttonLinkStatus = "Включаю…"
 
         // The event stream has room for exactly one reader.
         let events = attached.events
@@ -682,14 +682,14 @@ final class GlassesManager: ObservableObject {
                 if case .active = state {
                     self.inputsHasActivated = true
                     self.isButtonLinkActive = true
-                    self.buttonLinkStatus = "Đang hoạt động"
+                    self.buttonLinkStatus = "Работает"
                     self.linkRetryDelay = 5
                 } else if case .inactive = state {
                     // `inactive` is also the state Inputs is born in: only a link that was
                     // active and went quiet (a still crossed, the link blinked) is revived.
                     guard self.inputsHasActivated else { return }
                     self.isButtonLinkActive = false
-                    self.buttonLinkStatus = "Đang kết nối lại…"
+                    self.buttonLinkStatus = "Переподключение…"
                     self.reviveInputsIfNeeded()
                 }
             }
@@ -703,7 +703,7 @@ final class GlassesManager: ObservableObject {
                     // Not fixable with requestPermission: the capability isn't enabled for the app.
                     self.inputsPermissionDenied = true
                     self.isButtonLinkActive = false
-                    self.buttonLinkStatus = "Meta chưa cho phép app nhận nút chụp — bật Developer Mode trong Meta AI"
+                    self.buttonLinkStatus = "Meta не разрешает приложению кнопку съёмки — включи Developer Mode в Meta AI"
                 }
             }
         }

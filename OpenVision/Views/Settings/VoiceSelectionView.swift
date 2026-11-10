@@ -24,9 +24,9 @@ struct VoiceSelectionView: View {
     var body: some View {
         List {
             Section {
-                voiceRow(name: "Tự động (giọng tốt nhất đã cài)", quality: nil, identifier: nil)
+                voiceRow(name: "Авто (лучший установленный голос)", quality: nil, identifier: nil)
             } footer: {
-                Text("Tự chọn giọng chất lượng cao nhất (Premium › Enhanced › Default) có trên máy.")
+                Text("Берётся самый качественный голос на телефоне (Premium › Enhanced › Default).")
             }
 
             ForEach([AVSpeechSynthesisVoiceQuality.premium, .enhanced, .default], id: \.rawValue) { quality in
@@ -45,14 +45,14 @@ struct VoiceSelectionView: View {
             Section {
                 Link(destination: URL(string: "App-prefs:ACCESSIBILITY&path=SPEECH")!) {
                     HStack {
-                        Label("Tải thêm giọng", systemImage: "square.and.arrow.down")
+                        Label("Скачать голоса", systemImage: "square.and.arrow.down")
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .foregroundColor(.secondary)
                     }
                 }
             } footer: {
-                Text("Giọng Enhanced/Premium phát âm tự nhiên hơn nhiều. Tải trong Cài đặt iOS → Trợ năng → Nội dung được đọc → Giọng nói.")
+                Text("Голоса Enhanced/Premium звучат намного естественнее. Скачать: Настройки iOS → Универсальный доступ → Устный контент → Голоса.")
             }
         }
         .navigationTitle(title)
@@ -88,7 +88,7 @@ struct VoiceSelectionView: View {
                         .foregroundColor(Theme.accent)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Nghe thử \(name)")
+                .accessibilityLabel("Прослушать \(name)")
 
                 if selection == identifier {
                     Image(systemName: "checkmark")
@@ -118,7 +118,7 @@ struct VoiceSelectionView: View {
 
 #Preview {
     NavigationStack {
-        VoiceSelectionView(languagePrefix: "vi", title: "Giọng tiếng Việt",
-                           sample: "Xin chào, đáp án là x bằng 2.", selection: .constant(nil))
+        VoiceSelectionView(languagePrefix: "ru", title: "Русский голос",
+                           sample: "Привет, ответ: икс равно двум.", selection: .constant(nil))
     }
 }

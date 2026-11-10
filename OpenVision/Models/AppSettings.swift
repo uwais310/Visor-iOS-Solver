@@ -22,10 +22,10 @@ enum GlassesButtonAction: String, Codable, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .capture: return "Chụp ảnh (chờ câu hỏi)"
-        case .captureAndSolve: return "Chụp và giải ngay"
-        case .repeatAnswer: return "Đọc lại câu trả lời"
-        case .none: return "Không làm gì"
+        case .capture: return "Фото (жду вопрос)"
+        case .captureAndSolve: return "Фото и сразу ответ"
+        case .repeatAnswer: return "Повторить ответ"
+        case .none: return "Ничего"
         }
     }
 }
@@ -40,7 +40,7 @@ struct AppSettings: Codable, Equatable {
     // MARK: - Voice input
 
     /// Wake word phrase (default: "Ok Vision")
-    var wakeWord: String = "Ok Vision"
+    var wakeWord: String = "Клод"
 
     /// Whether wake word detection is enabled
     var wakeWordEnabled: Bool = true
@@ -53,7 +53,7 @@ struct AppSettings: Codable, Equatable {
 
     /// Language the speech recognizer listens for: "auto" (the iPhone's language), "vi-VN" or
     /// "en-US". iOS recognizes one language at a time; answers always follow the question's language.
-    var recognitionLanguage: String = "auto"
+    var recognitionLanguage: String = "ru-RU"
 
     /// Prefer the glasses' Bluetooth microphone for voice input when they're the connected audio
     /// device — true hands-free. Falls back to the phone mic automatically when the glasses aren't
@@ -67,8 +67,8 @@ struct AppSettings: Codable, Equatable {
     /// Developer Mode; falls back to the Camera Roll workflow when unavailable.
     var captureButtonEnabled: Bool = true
     var shortPressAction: GlassesButtonAction = .capture
-    var holdAction: GlassesButtonAction = .captureAndSolve
-    var doublePressAction: GlassesButtonAction = .repeatAnswer
+    var holdAction: GlassesButtonAction = .repeatAnswer
+    var doublePressAction: GlassesButtonAction = .captureAndSolve
     /// Also route the touchpad to the app — only if button presses never arrive (a known SDK
     /// quirk); while on, the temple touchpad no longer controls music/volume.
     var captureButtonIncludeTouchpad: Bool = false
@@ -84,7 +84,7 @@ struct AppSettings: Codable, Equatable {
     var selectedVietnameseVoiceIdentifier: String? = nil
 
     /// Speaking rate, 0.3 (slow) … 0.6 (fast). Apple's default is 0.5.
-    var speechRate: Float = 0.5
+    var speechRate: Float = 0.425
 
     // MARK: - AI Customization
 

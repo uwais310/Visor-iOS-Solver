@@ -23,22 +23,22 @@ struct GeminiSettingsView: View {
                     Text("API key")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    SecureField("AQ.… hoặc AIza…  (nhiều key: cách nhau bằng dấu phẩy)", text: $apiKey)
+                    SecureField("AQ.… или AIza…  (несколько ключей — через запятую)", text: $apiKey)
                         .autocapitalization(.none)
                         .autocorrectionDisabled()
                 }
             } header: {
-                Text("Xác thực")
+                Text("Ключ")
             } footer: {
                 let count = GeminiLiveService.parseKeys(apiKey).count
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 4) {
                         Image(systemName: count > 0 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                             .foregroundColor(count > 0 ? Theme.success : Theme.warning)
-                        Text(count > 0 ? "\(count) key — lưu trong Keychain của máy, không nằm trong mã nguồn" : "Chưa có key: app không thể gọi Gemini")
+                        Text(count > 0 ? "\(count) шт. — ключи хранятся в Keychain телефона, не в коде" : "Ключа нет: приложение не может обращаться к Gemini")
                             .foregroundColor(count > 0 ? Theme.success : Theme.warning)
                     }
-                    Text("Quota tính theo PROJECT và theo model, không theo key: chỉ thêm key từ các project Google Cloud khác nhau mới tăng quota. Khi model chính hết quota, app tự chuyển sang \(GeminiLiveService.modelChain.dropFirst().joined(separator: ", ")).")
+                    Text("Лимит считается по ПРОЕКТУ и по модели, а не по ключу: больше лимита дают только ключи из разных проектов Google Cloud. Когда у основной модели лимит кончается, приложение само переходит на \(GeminiLiveService.modelChain.dropFirst().joined(separator: ", ")).")
                         .foregroundColor(.secondary)
                 }
                 .font(.caption)
@@ -48,7 +48,7 @@ struct GeminiSettingsView: View {
             Section {
                 Link(destination: URL(string: "https://aistudio.google.com/app/apikey")!) {
                     HStack {
-                        Text("Lấy API key (Google AI Studio)")
+                        Text("Получить API-ключ (Google AI Studio)")
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .foregroundColor(.secondary)
@@ -56,9 +56,9 @@ struct GeminiSettingsView: View {
                 }
 
             } header: {
-                Text("Trợ giúp")
+                Text("Справка")
             } footer: {
-                Text("Model: \(GeminiLiveService.modelChain.joined(separator: " → ")). Câu trả lời được truyền dần (streaming): kính đọc câu đầu tiên ngay khi có.")
+                Text("Модели: \(GeminiLiveService.modelChain.joined(separator: " → ")). Ответ приходит потоком: очки читают первое предложение сразу.")
             }
 
         }

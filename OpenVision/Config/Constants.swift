@@ -8,7 +8,7 @@ enum Constants {
 
     enum Voice {
         /// Default wake word
-        static let defaultWakeWord = "Ok Vision"
+        static let defaultWakeWord = "Клод"
 
         /// Wake word cooldown to prevent double-detection (seconds)
         static let wakeWordCooldown: TimeInterval = 0.8

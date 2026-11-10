@@ -52,18 +52,9 @@ final class TTSService: NSObject, ObservableObject {
 
     /// Auto-detect Vietnamese characters or math keywords in the text
     nonisolated static func containsVietnamese(_ text: String) -> Bool {
-        let vietnamesePattern = "[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ]"
-        if text.range(of: vietnamesePattern, options: .regularExpression) != nil {
-            return true
-        }
-        // Vietnamese typed without diacritics. Single words are matched as WHOLE words — as
-        // substrings, "tru" made "true"/"structure" Vietnamese and an English answer was read
-        // in the Vietnamese voice.
-        let lower = text.lowercased()
-        let words = Set(lower.split(whereSeparator: { !$0.isLetter }).map(String.init))
-        let viWords: Set<String> = ["nghiem", "bang", "chia", "nhan", "cong", "tru"]
-        let viPhrases = ["phuong trinh", "ket qua", "dap an", "chup anh", "giai giup", "giai bai"]
-        return !words.isDisjoint(with: viWords) || viPhrases.contains { lower.contains($0) }
+        // Russian build: the app's second-language slot (named "Vietnamese" in the code) is Russian.
+        // Any Cyrillic letter means the sentence is read with the Russian voice.
+        return text.range(of: "[А-Яа-яЁё]", options: .regularExpression) != nil
     }
 
     // MARK: - Spoken Audio Cleaning (Visor parity)
@@ -109,11 +100,11 @@ final class TTSService: NSObject, ObservableObject {
         let settings = SettingsManager.shared.settings
         if vietnamese {
             if let id = settings.selectedVietnameseVoiceIdentifier,
-               let chosen = AVSpeechSynthesisVoice(identifier: id), chosen.language.hasPrefix("vi") { return chosen }
-            if let best = Self.bestVoice(for: "vi-VN") { return best }
+               let chosen = AVSpeechSynthesisVoice(identifier: id), chosen.language.hasPrefix("ru") { return chosen }
+            if let best = Self.bestVoice(for: "ru-RU") { return best }
         }
         if let id = settings.selectedVoiceIdentifier,
-           let chosen = AVSpeechSynthesisVoice(identifier: id), !chosen.language.hasPrefix("vi") { return chosen }
+           let chosen = AVSpeechSynthesisVoice(identifier: id), !chosen.language.hasPrefix("ru") { return chosen }
         return Self.bestVoice(for: "en-US")
     }
 
@@ -121,10 +112,10 @@ final class TTSService: NSObject, ObservableObject {
     static func voice(forText text: String, vietnamese: AVSpeechSynthesisVoice? = nil,
                       english: AVSpeechSynthesisVoice? = nil) -> AVSpeechSynthesisVoice? {
         if containsVietnamese(text) {
-            if let vietnamese, vietnamese.language.hasPrefix("vi") { return vietnamese }
-            if let viVoice = bestVoice(for: "vi-VN") { return viVoice }
+            if let vietnamese, vietnamese.language.hasPrefix("ru") { return vietnamese }
+            if let viVoice = bestVoice(for: "ru-RU") { return viVoice }
         }
-        if let english, !english.language.hasPrefix("vi") { return english }
+        if let english, !english.language.hasPrefix("ru") { return english }
         return bestVoice(for: "en-US")
     }
 
@@ -323,10 +314,10 @@ enum SpokenMath {
     }
 
     private static let vietnamese = Words(
-        squared: "bình phương", cubed: "lập phương", power: "mũ", root: "căn", over: "phần",
-        times: "nhân", divided: "chia", notEqual: "khác", lessEqual: "nhỏ hơn hoặc bằng",
-        greaterEqual: "lớn hơn hoặc bằng", approx: "xấp xỉ", less: "nhỏ hơn", greater: "lớn hơn",
-        equals: "bằng", plus: "cộng", minus: "trừ", negative: "âm", percent: "phần trăm")
+        squared: "в квадрате", cubed: "в кубе", power: "в степени", root: "корень из", over: "разделить на",
+        times: "умножить на", divided: "разделить на", notEqual: "не равно", lessEqual: "меньше или равно",
+        greaterEqual: "больше или равно", approx: "примерно равно", less: "меньше", greater: "больше",
+        equals: "равно", plus: "плюс", minus: "минус", negative: "минус", percent: "процентов")
 
     private static let english = Words(
         squared: "squared", cubed: "cubed", power: "to the power of", root: "the square root of",
@@ -362,7 +353,11 @@ enum SpokenMath {
         replace(#"([0-9)])\s+[-−]\s+([0-9(])"#, "$1 \(w.minus) $2")
         replace(#"(^|[\s(])[-−]([0-9])"#, "$1\(w.negative) $2")
         replace(#"([0-9])\s*%"#, "$1 \(w.percent)")
-        replace(#"π"#, " pi ")
+        replace(#"π"#, isVietnamese ? " пи " : " pi ")
+        if isVietnamese {
+            replace(#"(?<![A-Za-z])[xX](?![A-Za-z])"#, " икс ")
+            replace(#"(?<![A-Za-z])[yY](?![A-Za-z])"#, " игрек ")
+        }
         replace(#"[_^]"#, " ")
         replace(#"\s+"#, " ")
         return s.trimmingCharacters(in: .whitespaces)

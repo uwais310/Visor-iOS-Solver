@@ -140,7 +140,7 @@ final class VoiceCommandService: ObservableObject {
     /// "auto" → the device language (vi-VN on a Vietnamese iPhone), else the explicit choice.
     static func recognitionLocaleIdentifier(_ setting: String) -> String {
         switch setting {
-        case "vi-VN", "en-US": return setting
+        case "ru-RU", "vi-VN", "en-US": return setting
         default: return Locale.current.identifier.replacingOccurrences(of: "_", with: "-")
         }
     }
@@ -233,6 +233,10 @@ final class VoiceCommandService: ObservableObject {
         "ok vision", "okay vision", "o.k. vision", "o k vision",
         "hey vision", "hi vision",
         "a vision", "heavy vision", "have vision", "obey vision", "oak vision",
+        // Russian: "Клод" / "Эй, Клод", and how the Russian recognizer hears "Ok Vision"
+        "эй клод", "эй, клод", "хей клод", "окей клод", "окей, клод", "ок клод",
+        "клод", "клоуд", "клауд", "hey claude", "ok claude", "okay claude", "claude",
+        "окей вижн", "окей вижен", "ок вижн", "окей визион",
         // Vietnamese phonetic transcriptions
         "ô kê vi dơn", "ô kê vi giừn", "ô kê vision",
         "ok vi dơn", "ok vi giừn",
@@ -252,7 +256,8 @@ final class VoiceCommandService: ObservableObject {
         for v in variations {
             if let r = lower.range(of: v) {
                 if lower.distance(from: lower.startIndex, to: r.lowerBound) <= 15 {
-                    return String(text[r.upperBound...]).trimmingCharacters(in: .whitespaces)
+                    return String(text[r.upperBound...])
+                        .trimmingCharacters(in: CharacterSet.whitespaces.union(.punctuationCharacters))
                 }
             }
         }
@@ -438,6 +443,7 @@ final class VoiceCommandService: ObservableObject {
         request.taskHint = .search
         var phrases = [
             "Ok Vision", "Okay Vision", "Hey Vision", "Vision",
+            "Клод", "Эй, Клод", "Окей, Клод", "что это", "реши это", "переведи", "прочитай", "стоп",
             "ô kê vi dơn", "ô kê vi giừn", "ô kê vision",
             "ok vi dơn", "ok vi giừn",
             "ốc vi dơn", "ốc vi giừn",
@@ -804,7 +810,8 @@ final class VoiceCommandService: ObservableObject {
         if lower.contains("video") || lower.contains("stream") { return false }
         let stopWords = [
             "stop", "be quiet", "shut up", "silence", "quiet", "enough", "cancel",
-            "dừng lại", "thôi", "dừng", "dừng đi", "thôi đi"
+            "dừng lại", "thôi", "dừng", "dừng đi", "thôi đi",
+            "стоп", "хватит", "замолчи", "остановись", "тихо"
         ]
         return stopWords.contains { lower.contains($0) }
     }

@@ -34,7 +34,7 @@ struct GlassesSettingsView: View {
             Section {
                 Link(destination: URL(string: "https://wearables.developer.meta.com/docs/develop/")!) {
                     HStack {
-                        Text("Tài liệu Meta Wearables")
+                        Text("Документация Meta Wearables")
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .foregroundColor(.secondary)
@@ -43,29 +43,29 @@ struct GlassesSettingsView: View {
                 NavigationLink {
                     TroubleshootingView()
                 } label: {
-                    Text("Khắc phục sự cố")
+                    Text("Решение проблем")
                 }
             } header: {
-                Text("Trợ giúp")
+                Text("Справка")
             }
         }
-        .navigationTitle("Kính Ray-Ban Meta")
+        .navigationTitle("Очки Ray-Ban Meta")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: settingsManager.settings.captureButtonEnabled) { _, _ in applyButtonLink() }
         .onChange(of: settingsManager.settings.captureButtonIncludeTouchpad) { _, _ in applyButtonLink() }
         .confirmationDialog(
-            "Huỷ đăng ký kính",
+            "Отменить регистрацию очков",
             isPresented: $showingUnregisterConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Huỷ đăng ký", role: .destructive) {
+            Button("Отменить регистрацию", role: .destructive) {
                 Task { await glassesManager.unregister() }
             }
-            Button("Không", role: .cancel) {}
+            Button("Нет", role: .cancel) {}
         } message: {
-            Text("OpenVision sẽ ngắt khỏi kính. Bạn cần đăng ký lại qua app Meta AI để dùng tiếp.")
+            Text("OpenVision отключится от очков. Чтобы пользоваться дальше, нужно снова зарегистрироваться через Meta AI.")
         }
-        .alert("Lỗi", isPresented: .constant(glassesManager.errorMessage != nil)) {
+        .alert("Ошибка", isPresented: .constant(glassesManager.errorMessage != nil)) {
             Button("OK") { glassesManager.errorMessage = nil }
         } message: {
             if let error = glassesManager.errorMessage {
@@ -82,10 +82,10 @@ struct GlassesSettingsView: View {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(Theme.success)
-                    Text("Đã đăng ký")
+                    Text("Зарегистрировано")
                         .foregroundColor(Theme.success)
                     Spacer()
-                    Button("Huỷ đăng ký") {
+                    Button("Отменить регистрацию") {
                         showingUnregisterConfirmation = true
                     }
                     .foregroundColor(Theme.danger)
@@ -93,7 +93,7 @@ struct GlassesSettingsView: View {
                 }
             } else {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Đăng ký với app Meta AI để OpenVision dùng được kính.")
+                    Text("Зарегистрируй приложение в Meta AI, чтобы OpenVision мог работать с очками.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
@@ -105,10 +105,10 @@ struct GlassesSettingsView: View {
                             if isRegistering {
                                 ProgressView()
                                     .padding(.trailing, 8)
-                                Text("Đang mở Meta AI…")
+                                Text("Открываю Meta AI…")
                             } else {
                                 Image(systemName: "person.badge.plus")
-                                Text("Đăng ký app")
+                                Text("Зарегистрировать")
                             }
                             Spacer()
                         }
@@ -128,21 +128,21 @@ struct GlassesSettingsView: View {
                 }
             }
         } header: {
-            Text("Đăng ký")
+            Text("Регистрация")
         } footer: {
-            Text("Bật Developer Mode trong app Meta AI (Cài đặt → Thiết bị → Kính → Developer Mode) trước khi đăng ký.")
+            Text("Сначала включи Developer Mode в приложении Meta AI: Настройки → App Info → нажми на номер версии 5 раз → включи Developer Mode.")
         }
     }
 
     private var captureButtonSection: some View {
         Section {
             Toggle(isOn: $settingsManager.settings.captureButtonEnabled) {
-                Label("Nút chụp gửi thẳng vào app", systemImage: "camera.shutter.button")
+                Label("Кнопка съёмки управляет приложением", systemImage: "camera.shutter.button")
             }
 
             if settingsManager.settings.captureButtonEnabled {
                 HStack {
-                    Text("Trạng thái")
+                    Text("Статус")
                     Spacer()
                     Circle()
                         .fill(glassesManager.isButtonLinkActive ? Theme.success : Theme.inactive)
@@ -153,24 +153,24 @@ struct GlassesSettingsView: View {
                         .multilineTextAlignment(.trailing)
                 }
 
-                Picker("Bấm 1 lần", selection: $settingsManager.settings.shortPressAction) {
+                Picker("1 нажатие", selection: $settingsManager.settings.shortPressAction) {
                     ForEach(GlassesButtonAction.allCases) { Text($0.displayName).tag($0) }
                 }
-                Picker("Giữ nút", selection: $settingsManager.settings.holdAction) {
+                Picker("Удержание", selection: $settingsManager.settings.holdAction) {
                     ForEach(GlassesButtonAction.allCases) { Text($0.displayName).tag($0) }
                 }
-                Picker("Bấm 2 lần", selection: $settingsManager.settings.doublePressAction) {
+                Picker("2 нажатия", selection: $settingsManager.settings.doublePressAction) {
                     ForEach(GlassesButtonAction.allCases) { Text($0.displayName).tag($0) }
                 }
 
                 Toggle(isOn: $settingsManager.settings.captureButtonIncludeTouchpad) {
-                    Text("Nhận cả bàn chạm (nếu nút không phản hồi)")
+                    Text("Ловить и тачпад (если кнопка не отвечает)")
                 }
             }
         } header: {
-            Text("Nút chụp trên kính")
+            Text("Кнопка съёмки на очках")
         } footer: {
-            Text("Ảnh đi thẳng từ kính vào app rồi gửi Gemini, không cần chờ Meta AI nhập vào Thư viện ảnh. Tính năng thử nghiệm của Meta (cần Developer Mode). Nếu không dùng được, app tự quay về cách cũ: chụp bằng kính rồi đọc ảnh mới nhất trong Thư viện. Khi bật \"bàn chạm\", vuốt/chạm gọng kính sẽ không điều khiển nhạc.")
+            Text("Фото идёт с очков прямо в приложение и дальше в Gemini, без ожидания импорта в Фото. Это экспериментальная функция Meta (нужен Developer Mode). Если она не работает, приложение берёт последнее фото очков из галереи. При включённом \"тачпаде\" жесты на дужке не управляют музыкой.")
         }
     }
 
@@ -178,8 +178,8 @@ struct GlassesSettingsView: View {
         Section {
             Toggle(isOn: $settingsManager.settings.fullResolutionPhotos) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Ảnh độ phân giải đầy đủ")
-                    Text(settingsManager.settings.fullResolutionPhotos ? "~12 MP — rõ chữ nhỏ nhất, truyền lâu hơn" : "1080p — nhanh hơn")
+                    Text("Фото в полном разрешении")
+                    Text(settingsManager.settings.fullResolutionPhotos ? "~12 Мп — виден самый мелкий текст, передаётся дольше" : "1080p — быстрее")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -189,7 +189,7 @@ struct GlassesSettingsView: View {
                 testPhoto()
             } label: {
                 HStack {
-                    Label("Chụp thử", systemImage: "camera")
+                    Label("Пробный снимок", systemImage: "camera")
                     Spacer()
                     if isTestingPhoto {
                         ProgressView()
@@ -202,23 +202,23 @@ struct GlassesSettingsView: View {
             }
             .disabled(isTestingPhoto || glassesManager.isTakingPhoto || glassesManager.connectedDevice == nil)
         } header: {
-            Text("Chất lượng ảnh")
+            Text("Качество фото")
         } footer: {
-            Text("App tự giảm ảnh xuống 3072 px trước khi gửi Gemini (mức chi tiết tối đa Gemini dùng), nên ảnh gốc lớn chỉ làm truyền từ kính lâu hơn chứ không tốn thêm token.")
+            Text("Перед отправкой в Gemini фото уменьшается до 3072 px (максимум деталей, который использует Gemini), так что большое фото только дольше передаётся с очков.")
         }
     }
 
     private var statusSection: some View {
         Section {
             HStack {
-                Text("Kính đang kết nối")
+                Text("Очки подключены")
                 Spacer()
                 Text("\(glassesManager.connectedDeviceCount)")
                     .foregroundColor(.secondary)
             }
             if let device = glassesManager.connectedDevice {
                 HStack {
-                    Text("Thiết bị")
+                    Text("Устройство")
                     Spacer()
                     Text(device)
                         .font(.footnote)
@@ -231,18 +231,18 @@ struct GlassesSettingsView: View {
                 Text("Camera")
                 Spacer()
                 if glassesManager.isTakingPhoto {
-                    Text("Đang chụp…").foregroundColor(Theme.accent)
+                    Text("Снимаю…").foregroundColor(Theme.accent)
                 } else if glassesManager.isStreaming {
                     HStack(spacing: 4) {
                         Circle().fill(Theme.danger).frame(width: 8, height: 8)
-                        Text("Đang bật").foregroundColor(Theme.danger)
+                        Text("Включена").foregroundColor(Theme.danger)
                     }
                 } else {
-                    Text("Tắt").foregroundColor(.secondary)
+                    Text("Выкл.").foregroundColor(.secondary)
                 }
             }
         } header: {
-            Text("Trạng thái")
+            Text("Статус")
         }
     }
 
@@ -255,24 +255,24 @@ struct GlassesSettingsView: View {
                     do {
                         try await Wearables.shared.openDATGlassesAppUpdate()
                     } catch {
-                        glassesManager.errorMessage = "Không mở được cập nhật: \(error.localizedDescription)"
+                        glassesManager.errorMessage = "Не удалось открыть обновление: \(error.localizedDescription)"
                     }
                 }
             } label: {
-                Label("Cài/cập nhật thành phần trên kính", systemImage: "arrow.down.circle")
+                Label("Установить/обновить компоненты на очках", systemImage: "arrow.down.circle")
             }
 
             if glassesManager.isStreaming {
                 Button {
                     Task { await glassesManager.stopStreaming() }
                 } label: {
-                    Label("Tắt camera kính", systemImage: "video.slash")
+                    Label("Выключить камеру очков", systemImage: "video.slash")
                 }
             }
         } header: {
-            Text("Công cụ")
+            Text("Инструменты")
         } footer: {
-            Text("Dùng khi kính báo \"Device unavailable\" hoặc phiên kết nối bị ngắt ngay.")
+            Text("Используй, если очки пишут \"Device unavailable\" или сессия сразу обрывается.")
         }
     }
 
@@ -293,7 +293,7 @@ struct GlassesSettingsView: View {
                 let size = UIImage(data: data).map { "\(Int($0.size.width * $0.scale))×\(Int($0.size.height * $0.scale))" } ?? "?"
                 testPhotoResult = String(format: "%@ · %.1f s", size, Date().timeIntervalSince(started))
             } else {
-                testPhotoResult = "Không chụp được"
+                testPhotoResult = "Не удалось снять"
             }
             isTestingPhoto = false
         }
@@ -320,40 +320,40 @@ struct GlassesSettingsView: View {
 struct TroubleshootingView: View {
     var body: some View {
         List {
-            Section("Đăng ký") {
+            Section("Регистрация") {
                 TroubleshootingItem(
-                    title: "App Meta AI không mở",
-                    solution: "Cài app Meta AI và đăng nhập."
+                    title: "Meta AI не открывается",
+                    solution: "Установи приложение Meta AI и войди в аккаунт."
                 )
                 TroubleshootingItem(
-                    title: "Đăng ký thất bại",
-                    solution: "Bật Developer Mode trong app Meta AI rồi thử lại."
-                )
-            }
-
-            Section("Nút chụp") {
-                TroubleshootingItem(
-                    title: "Bấm nút chụp mà app không phản hồi",
-                    solution: "Xem Trạng thái trong mục Nút chụp. Nếu báo \"Meta chưa cho phép\", bật Developer Mode. Nếu \"Đang hoạt động\" mà vẫn im, bật \"Nhận cả bàn chạm\"."
-                )
-                TroubleshootingItem(
-                    title: "Ảnh lâu mới tới",
-                    solution: "Tắt \"Ảnh độ phân giải đầy đủ\" để dùng 1080p — nhanh hơn, vẫn đọc tốt chữ in."
+                    title: "Регистрация не проходит",
+                    solution: "Включи Developer Mode в приложении Meta AI и попробуй снова."
                 )
             }
 
-            Section("Kết nối") {
+            Section("Кнопка съёмки") {
                 TroubleshootingItem(
-                    title: "Không thấy kính",
-                    solution: "Mở gọng kính, đeo vào, và kiểm tra kính đã kết nối Bluetooth với iPhone."
+                    title: "Нажимаю кнопку, а приложение молчит",
+                    solution: "Посмотри Статус в разделе кнопки. Если там \"Meta не разрешает\", включи Developer Mode. Если \"Работает\", но тишина — включи \"Ловить и тачпад\"."
                 )
                 TroubleshootingItem(
-                    title: "Camera không bật",
-                    solution: "Đóng các app khác đang dùng kính (chỉ một app dùng được kính tại một thời điểm)."
+                    title: "Фото приходит долго",
+                    solution: "Выключи \"Фото в полном разрешении\" — 1080p быстрее, а печатный текст всё равно читается."
+                )
+            }
+
+            Section("Подключение") {
+                TroubleshootingItem(
+                    title: "Очки не видны",
+                    solution: "Раскрой дужки, надень очки и проверь, что они подключены к iPhone по Bluetooth."
+                )
+                TroubleshootingItem(
+                    title: "Камера не включается",
+                    solution: "Закрой другие приложения, которые используют очки (с очками одновременно работает только одно)."
                 )
             }
         }
-        .navigationTitle("Khắc phục sự cố")
+        .navigationTitle("Решение проблем")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

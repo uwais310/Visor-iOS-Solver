@@ -26,7 +26,7 @@ struct SettingsView: View {
                                 Text("\(GeminiLiveService.parseKeys(settingsManager.settings.geminiAPIKey).count) key")
                                     .foregroundColor(.secondary)
                             } else {
-                                Text("Chưa có key")
+                                Text("Нет ключа")
                                     .foregroundColor(Theme.warning)
                                 Image(systemName: "exclamationmark.circle.fill")
                                     .foregroundColor(Theme.warning)
@@ -37,14 +37,14 @@ struct SettingsView: View {
                     NavigationLink {
                         AdditionalInstructionsView()
                     } label: {
-                        Label("Hướng dẫn riêng", systemImage: "text.quote")
+                        Label("Свои инструкции", systemImage: "text.quote")
                     }
 
                     NavigationLink {
                         MemoriesView()
                     } label: {
                         HStack {
-                            Label("Ghi nhớ", systemImage: "brain")
+                            Label("Память", systemImage: "brain")
                             Spacer()
                             Text("\(settingsManager.settings.memories.count)")
                                 .foregroundColor(.secondary)
@@ -60,14 +60,14 @@ struct SettingsView: View {
                         GlassesSettingsView()
                     } label: {
                         HStack {
-                            Label("Kính Ray-Ban Meta", systemImage: "eyeglasses")
+                            Label("Очки Ray-Ban Meta", systemImage: "eyeglasses")
                             Spacer()
                             Image(systemName: glassesManager.isRegistered ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
                                 .foregroundColor(glassesManager.isRegistered ? Theme.success : Theme.warning)
                         }
                     }
                 } header: {
-                    Text("Phần cứng")
+                    Text("Устройство")
                 }
 
                 // Voice
@@ -76,44 +76,44 @@ struct SettingsView: View {
                         VoiceSettingsView()
                     } label: {
                         HStack {
-                            Label("Giọng nói", systemImage: "mic.fill")
+                            Label("Голос", systemImage: "mic.fill")
                             Spacer()
-                            Text(settingsManager.settings.wakeWordEnabled ? settingsManager.settings.wakeWord : "Tắt")
+                            Text(settingsManager.settings.wakeWordEnabled ? settingsManager.settings.wakeWord : "Выкл.")
                                 .foregroundColor(.secondary)
                         }
                     }
                 } header: {
-                    Text("Giọng nói")
+                    Text("Голос")
                 }
 
                 // Display
                 Section {
                     Toggle(isOn: $settingsManager.settings.showTranscripts) {
-                        Label("Hiện hội thoại trên màn hình", systemImage: "text.bubble")
+                        Label("Показывать диалог на экране", systemImage: "text.bubble")
                     }
                 } header: {
-                    Text("Hiển thị")
+                    Text("Экран")
                 }
 
                 // About
                 Section {
                     HStack {
-                        Label("Phiên bản", systemImage: "info.circle")
+                        Label("Версия", systemImage: "info.circle")
                         Spacer()
                         Text("\(Config.appVersion) (\(Config.buildNumber))")
                             .foregroundColor(.secondary)
                     }
 
                     Link(destination: URL(string: "https://github.com/darwnlinz1/OpenVision")!) {
-                        Label("Mã nguồn trên GitHub", systemImage: "link")
+                        Label("Исходный код на GitHub", systemImage: "link")
                     }
                 } header: {
-                    Text("Giới thiệu")
+                    Text("О приложении")
                 } footer: {
-                    Text("OpenVision là phần mềm mã nguồn mở (MIT).")
+                    Text("OpenVision — открытое ПО (MIT). Русская сборка.")
                 }
             }
-            .navigationTitle("Cài đặt")
+            .navigationTitle("Настройки")
         }
     }
 }

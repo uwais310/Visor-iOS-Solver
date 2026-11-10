@@ -15,7 +15,7 @@ struct VoiceSettingsView: View {
         if let identifier, let voice = AVSpeechSynthesisVoice(identifier: identifier) {
             return voice.name
         }
-        return TTSService.bestVoice(for: language).map { "Tự động · \($0.name)" } ?? "Tự động"
+        return TTSService.bestVoice(for: language).map { "Авто · \($0.name)" } ?? "Авто"
     }
 
     // MARK: - Body
@@ -26,63 +26,63 @@ struct VoiceSettingsView: View {
             Section {
                 Toggle(isOn: $settingsManager.settings.wakeWordEnabled) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Từ đánh thức")
-                        Text("Chỉ nghe sau khi bạn gọi tên")
+                        Text("Слово-обращение")
+                        Text("Слушает вопрос только после этого слова")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
 
                 if settingsManager.settings.wakeWordEnabled {
-                    TextField("Ok Vision", text: $settingsManager.settings.wakeWord)
+                    TextField("Клод", text: $settingsManager.settings.wakeWord)
                         .autocorrectionDisabled()
                 }
             } header: {
-                Text("Gọi trợ lý")
+                Text("Как позвать")
             } footer: {
-                Text("Nói \"\(settingsManager.settings.wakeWord)\" rồi hỏi tự do, tiếng Việt hay tiếng Anh. Các cách đọc như \"ô kê vi dơn\" cũng được nhận.")
+                Text("Скажи \"\(settingsManager.settings.wakeWord)\" и спрашивай свободно, по-русски или по-английски. Варианты вроде \"Эй, Клод\" тоже подходят.")
             }
 
             // Listening
             Section {
                 Toggle(isOn: $settingsManager.settings.preferGlassesMic) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Dùng mic của kính")
-                        Text("Rảnh tay hoàn toàn khi đang đeo kính")
+                        Text("Микрофон очков")
+                        Text("Полностью без рук, пока очки на тебе")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
 
-                Picker("Ngôn ngữ nghe", selection: $settingsManager.settings.recognitionLanguage) {
-                    Text("Tự động (theo iPhone)").tag("auto")
-                    Text("Tiếng Việt").tag("vi-VN")
+                Picker("Язык распознавания", selection: $settingsManager.settings.recognitionLanguage) {
+                    Text("Авто (как на iPhone)").tag("auto")
+                    Text("Русский").tag("ru-RU")
                     Text("English").tag("en-US")
                 }
 
-                Picker("Tự kết thúc khi im lặng", selection: $settingsManager.settings.conversationTimeout) {
-                    Text("15 giây").tag(TimeInterval(15))
-                    Text("30 giây").tag(TimeInterval(30))
-                    Text("1 phút").tag(TimeInterval(60))
-                    Text("2 phút").tag(TimeInterval(120))
+                Picker("Завершать при тишине", selection: $settingsManager.settings.conversationTimeout) {
+                    Text("15 сек").tag(TimeInterval(15))
+                    Text("30 сек").tag(TimeInterval(30))
+                    Text("1 мин").tag(TimeInterval(60))
+                    Text("2 мин").tag(TimeInterval(120))
                 }
             } header: {
-                Text("Nghe")
+                Text("Микрофон")
             } footer: {
-                Text("iOS chỉ nhận dạng một ngôn ngữ một lúc: chọn ngôn ngữ bạn hỏi nhiều nhất. Câu trả lời luôn theo ngôn ngữ của câu hỏi. Đổi ngôn ngữ nghe có hiệu lực ở lần gọi tiếp theo.")
+                Text("iOS распознаёт один язык за раз: выбери тот, на котором спрашиваешь чаще. Ответ всегда на языке вопроса. Смена языка действует со следующего обращения.")
             }
 
             // Answer voices
             Section {
                 NavigationLink {
-                    VoiceSelectionView(languagePrefix: "vi", title: "Giọng tiếng Việt",
-                                       sample: "Xin chào, đáp án câu này là x bằng 2.",
+                    VoiceSelectionView(languagePrefix: "ru", title: "Русский голос",
+                                       sample: "Привет, ответ в этом задании: икс равно двум.",
                                        selection: $settingsManager.settings.selectedVietnameseVoiceIdentifier)
                 } label: {
                     HStack {
-                        Text("Giọng tiếng Việt")
+                        Text("Русский голос")
                         Spacer()
-                        Text(voiceName(settingsManager.settings.selectedVietnameseVoiceIdentifier, language: "vi-VN"))
+                        Text(voiceName(settingsManager.settings.selectedVietnameseVoiceIdentifier, language: "ru-RU"))
                             .foregroundColor(.secondary)
                     }
                 }
@@ -93,7 +93,7 @@ struct VoiceSettingsView: View {
                                        selection: $settingsManager.settings.selectedVoiceIdentifier)
                 } label: {
                     HStack {
-                        Text("Giọng tiếng Anh")
+                        Text("Английский голос")
                         Spacer()
                         Text(voiceName(settingsManager.settings.selectedVoiceIdentifier, language: "en-US"))
                             .foregroundColor(.secondary)
@@ -102,7 +102,7 @@ struct VoiceSettingsView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Text("Tốc độ đọc")
+                        Text("Скорость речи")
                         Spacer()
                         Text(String(format: "%.0f%%", settingsManager.settings.speechRate / 0.5 * 100))
                             .foregroundColor(.secondary)
@@ -112,21 +112,21 @@ struct VoiceSettingsView: View {
                         .tint(Theme.accent)
                 }
             } header: {
-                Text("Giọng đọc câu trả lời")
+                Text("Голос ответа")
             } footer: {
-                Text("Mỗi câu được đọc bằng giọng đúng ngôn ngữ của nó. Công thức được đọc thành lời (\"x bình phương\", \"bằng\", \"phần\").")
+                Text("Каждое предложение читается голосом своего языка. Формулы читаются словами (\"икс в квадрате\", \"равно\", \"плюс\").")
             }
 
             // Feedback
             Section {
                 Toggle(isOn: $settingsManager.settings.playActivationSound) {
-                    Text("Âm báo khi gọi trợ lý")
+                    Text("Звук при обращении")
                 }
             } header: {
-                Text("Phản hồi")
+                Text("Отклик")
             }
         }
-        .navigationTitle("Giọng nói")
+        .navigationTitle("Голос")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

@@ -86,11 +86,11 @@ struct SolutionSheet: View {
                 SolutionWebView(markdown: markdown)
                     .ignoresSafeArea(edges: .bottom)
             }
-            .navigationTitle("Lời giải")
+            .navigationTitle("Решение")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Đóng") { dismiss() }
+                    Button("Закрыть") { dismiss() }
                         .foregroundColor(Theme.accent)
                 }
                 ToolbarItem(placement: .primaryAction) {
@@ -99,10 +99,10 @@ struct SolutionSheet: View {
                         copied = true
                         HapticFeedback.success()
                     } label: {
-                        Label(copied ? "Đã sao chép" : "Sao chép", systemImage: copied ? "checkmark" : "doc.on.doc")
+                        Label(copied ? "Скопировано" : "Копировать", systemImage: copied ? "checkmark" : "doc.on.doc")
                     }
                     .foregroundColor(Theme.accent)
-                    .accessibilityLabel("Sao chép lời giải")
+                    .accessibilityLabel("Копировать решение")
                 }
             }
         }
@@ -118,7 +118,7 @@ struct SolutionButton: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: "function")
-                Text("Xem lời giải chi tiết")
+                Text("Открыть подробное решение")
             }
             .font(.footnote.weight(.semibold))
             .foregroundColor(.black.opacity(0.9))
@@ -126,7 +126,7 @@ struct SolutionButton: View {
             .padding(.vertical, 8)
             .background(Capsule().fill(Theme.buttonGradient))
         }
-        .accessibilityHint("Mở lời giải từng bước với công thức")
+        .accessibilityHint("Открывает решение по шагам с формулами")
     }
 }
 

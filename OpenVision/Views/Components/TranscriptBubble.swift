@@ -119,7 +119,7 @@ struct TranscriptView: View {
                     VStack(alignment: .trailing, spacing: 6) {
                         HStack(spacing: 6) {
                             Circle().fill(Theme.success).frame(width: 8, height: 8)
-                            Text("ẢNH KÍNH ĐÃ ĐÍNH KÈM")
+                            Text("ФОТО С ОЧКОВ ПРИКРЕПЛЕНО")
                                 .font(.caption2.weight(.bold))
                                 .foregroundColor(Theme.accent)
                                 .textCase(.uppercase)
@@ -141,7 +141,7 @@ struct TranscriptView: View {
                             .clipped()
                             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.accent, lineWidth: 1.5))
                             .shadow(color: Theme.accent.opacity(0.35), radius: 8, y: 2)
-                        Text("Đã đính kèm ảnh kính. Nhập hoặc đọc câu hỏi...")
+                        Text("Фото с очков прикреплено. Напиши или скажи вопрос…")
                             .font(.caption2)
                             .foregroundColor(Theme.textSecondary)
                     }

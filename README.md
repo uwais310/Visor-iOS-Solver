@@ -1,5 +1,7 @@
 # OpenVision — Ray-Ban Meta × Gemini homework solver
 
+> **Russian build.** This branch localises the app to Russian: Russian speech recognition and voice, wake word «Клод», formulas read aloud in Russian words, Russian UI. Everything else is the upstream fork.
+
 Bấm nút chụp trên kính, nói **"Ok Vision"** và hỏi bất cứ điều gì bằng tiếng Việt hoặc tiếng Anh.
 Kính đọc câu trả lời bằng đúng ngôn ngữ bạn hỏi; điện thoại hiện lời giải từng bước với công thức.
 

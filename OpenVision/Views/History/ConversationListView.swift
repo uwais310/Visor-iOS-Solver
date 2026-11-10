@@ -219,7 +219,7 @@ struct MessageBubble: View {
                         Button {
                             openSolution = SolutionItem(markdown: message.content)
                         } label: {
-                            Label("Xem công thức", systemImage: "function")
+                            Label("Формулы", systemImage: "function")
                                 .font(.caption2.weight(.semibold))
                         }
                         .foregroundColor(Theme.accent)

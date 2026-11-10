@@ -167,7 +167,7 @@ struct VoiceAgentView: View {
                     photoBadge(now: timeline.date)
                 }
             }
-            .accessibilityLabel("Chụp ảnh bằng kính")
+            .accessibilityLabel("Снять фото очками")
 
             // Glasses status
             HStack(spacing: 8) {
@@ -212,17 +212,17 @@ struct VoiceAgentView: View {
             Group {
                 if viewModel.agentState == .idle && settingsManager.settings.wakeWordEnabled {
                     VStack(spacing: 8) {
-                        Text("Hỏi gì cũng được")
+                        Text("Спрашивай что угодно")
                             .font(.system(size: 30, weight: .bold, design: .rounded))
                             .foregroundColor(Theme.heading)
                         if viewModel.isVoiceReady {
-                            Text("Bấm nút chụp trên kính, rồi nói \"\(settingsManager.settings.wakeWord)\" + câu hỏi")
+                            Text("Скажи \"\(settingsManager.settings.wakeWord)\" и вопрос — или нажми кнопку на очках")
                                 .font(.subheadline)
                                 .foregroundColor(Theme.textSecondary)
                         } else {
                             HStack(spacing: 8) {
                                 ProgressView().tint(Theme.accent).scaleEffect(0.8)
-                                Text("Đang khởi động giọng nói…")
+                                Text("Запускаю голос…")
                                     .font(.subheadline)
                                     .foregroundColor(Theme.textSecondary)
                             }
@@ -281,10 +281,10 @@ struct VoiceAgentView: View {
                     .background(Circle().fill(.ultraThinMaterial))
                     .overlay(Circle().stroke(Theme.accent.opacity(viewModel.currentTranscriptPhotoData != nil ? 0.8 : 0.2), lineWidth: 1))
             }
-            .accessibilityLabel("Chụp ảnh bằng kính")
+            .accessibilityLabel("Снять фото очками")
 
             // Text input field for typing prompt
-            TextField("Nhập prompt hoặc đọc qua mic kính...", text: $typedPrompt)
+            TextField("Напиши вопрос или скажи его…", text: $typedPrompt)
                 .font(.subheadline)
                 .foregroundColor(Theme.textPrimary)
                 .focused($isPromptFocused)
@@ -369,7 +369,7 @@ struct VoiceAgentView: View {
                 .overlay(Capsule().stroke(ready ? Theme.success.opacity(0.6) : Theme.bgElevatedStroke, lineWidth: 1))
         )
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(ready ? "Có ảnh từ kính, chụp \(Int(age ?? 0)) giây trước" : "Chưa có ảnh")
+        .accessibilityLabel(ready ? "Есть фото с очков, снято \(Int(age ?? 0)) сек. назад" : "Фото нет")
     }
 
     // MARK: - Error Overlay

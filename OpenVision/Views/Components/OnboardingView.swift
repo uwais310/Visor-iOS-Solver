@@ -50,7 +50,7 @@ struct OnboardingView: View {
                 // Navigation buttons
                 HStack {
                     if currentPage > 0 {
-                        Button("Quay lại") {
+                        Button("Назад") {
                             withAnimation {
                                 currentPage -= 1
                             }
@@ -67,7 +67,7 @@ struct OnboardingView: View {
                             }
                         } label: {
                             HStack {
-                                Text("Tiếp")
+                                Text("Далее")
                                 Image(systemName: "arrow.right")
                             }
                             .foregroundColor(.black.opacity(0.9))
@@ -135,7 +135,7 @@ private struct WelcomePage: View {
                     .font(.system(size: 42, weight: .bold))
                     .foregroundColor(.white)
 
-                Text("Chụp bài, hỏi, nghe đáp án ngay trên kính.")
+                Text("Смотри, спрашивай — ответ звучит прямо в очках.")
                     .font(.title3)
                     .foregroundColor(.white.opacity(0.7))
             }
@@ -160,7 +160,7 @@ private struct FeaturesPage: View {
         VStack(spacing: 32) {
             Spacer()
 
-            Text("Làm được gì")
+            Text("Что умеет")
                 .font(.title)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
@@ -168,26 +168,26 @@ private struct FeaturesPage: View {
             VStack(spacing: 24) {
                 FeatureRow(
                     icon: "camera.shutter.button",
-                    title: "Ảnh thẳng từ kính",
-                    description: "Bấm nút chụp: ảnh nét gửi ngay cho Gemini, không chờ Thư viện."
+                    title: "Фото прямо с очков",
+                    description: "Нажми кнопку съёмки: чёткое фото сразу уходит в Gemini."
                 )
 
                 FeatureRow(
                     icon: "mic.fill",
-                    title: "Hỏi tự do, Việt hoặc Anh",
-                    description: "Nói \"Ok Vision\" rồi hỏi gì cũng được. Hỏi tiếng nào, đáp tiếng đó."
+                    title: "Спрашивай свободно",
+                    description: "Скажи \"Клод\" и задай любой вопрос. На каком языке спросил — на том и ответ."
                 )
 
                 FeatureRow(
                     icon: "function",
-                    title: "Lời giải có công thức",
-                    description: "Kính đọc đáp án; iPhone hiện từng bước với công thức toán."
+                    title: "Решение с формулами",
+                    description: "Очки говорят ответ, iPhone показывает шаги с формулами."
                 )
 
                 FeatureRow(
                     icon: "lock.shield.fill",
-                    title: "Key của riêng bạn",
-                    description: "API key nằm trong Keychain của máy, không bao giờ trong mã nguồn."
+                    title: "Твой собственный ключ",
+                    description: "API-ключ хранится в Keychain телефона, не в коде."
                 )
             }
             .padding(.horizontal, 24)
@@ -249,7 +249,7 @@ private struct SetupPage: View {
         VStack(spacing: 32) {
             Spacer()
 
-            Text("Thiết lập nhanh")
+            Text("Быстрая настройка")
                 .font(.title)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
@@ -257,26 +257,26 @@ private struct SetupPage: View {
             VStack(spacing: 20) {
                 SetupStep(
                     number: 1,
-                    title: "Dán API key Gemini",
-                    description: "Cài đặt → Gemini. Lấy key miễn phí ở Google AI Studio"
+                    title: "Вставь API-ключ Gemini",
+                    description: "Настройки → Gemini. Бесплатный ключ — в Google AI Studio"
                 )
 
                 SetupStep(
                     number: 2,
-                    title: "Kết nối kính",
-                    description: "Đăng ký kính Ray-Ban Meta qua ứng dụng Meta AI"
+                    title: "Подключи очки",
+                    description: "Зарегистрируй очки Ray-Ban Meta через приложение Meta AI"
                 )
 
                 SetupStep(
                     number: 3,
-                    title: "Chụp và hỏi",
-                    description: "Bấm nút chụp trên gọng kính, rồi nói \"Ok Vision\" + câu hỏi"
+                    title: "Сними и спроси",
+                    description: "Нажми кнопку съёмки на дужке или скажи \"Клод\" и вопрос"
                 )
 
                 SetupStep(
                     number: 4,
-                    title: "Nghe và xem",
-                    description: "Kính đọc đáp án; iPhone hiện lời giải chi tiết có công thức"
+                    title: "Слушай и смотри",
+                    description: "Очки говорят ответ, iPhone показывает подробное решение"
                 )
             }
             .padding(.horizontal, 24)
@@ -354,12 +354,12 @@ private struct GetStartedPage: View {
                     .foregroundColor(.white)
             }
 
-            Text("Sẵn sàng!")
+            Text("Готово!")
                 .font(.title)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
 
-            Text("Dán API key Gemini trong Cài đặt, đăng ký kính, rồi nói \"Ok Vision\".")
+            Text("Вставь API-ключ Gemini в Настройках, зарегистрируй очки и скажи \"Клод\".")
                 .font(.body)
                 .foregroundColor(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
@@ -373,7 +373,7 @@ private struct GetStartedPage: View {
                     hasCompletedOnboarding = true
                 }
             } label: {
-                Text("Bắt đầu")
+                Text("Начать")
                     .font(.headline)
                     .foregroundColor(.black.opacity(0.9))
                     .frame(maxWidth: .infinity)
