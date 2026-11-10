@@ -2,21 +2,33 @@ name: Build Unsigned IPA
 
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: "GitHub runner image (macos-26, or macos-15 when macos-26 has no capacity)"
+        default: macos-26
+        required: false
 
 concurrency:
-  group: ipa-build-${{ github.ref }}
+  group: ipa-build-${{ github.ref }}-${{ inputs.runner }}
   cancel-in-progress: true
-
-env:
-  DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
 
 jobs:
   build:
     name: Build OpenVision IPA
-    runs-on: macos-26
+    runs-on: ${{ inputs.runner || 'macos-26' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Select Xcode (26.6 when installed, else the newest on the image)
+        run: |
+          XCODE=/Applications/Xcode_26.6.app
+          if [ ! -d "$XCODE" ]; then
+            XCODE=$(ls -d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -n 1)
+          fi
+          echo "Using $XCODE"
+          echo "DEVELOPER_DIR=$XCODE/Contents/Developer" >> "$GITHUB_ENV"
+          ls -d /Applications/Xcode_*.app
 
       - name: Ensure configuration files
         run: |
